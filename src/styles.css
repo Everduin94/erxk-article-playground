@@ -1,7 +1,7 @@
 /* Tippy Stuff */
-@import '~tippy.js/dist/tippy.css';
-@import '~tippy.js/themes/light.css';
-@import '~tippy.js/animations/scale.css';
+@import "~tippy.js/dist/tippy.css";
+@import "~tippy.js/themes/light.css";
+@import "~tippy.js/animations/scale.css";
 
 /* You can add global styles to this file, and also import other style files */
 :root {
@@ -12,17 +12,29 @@
   --background-color: #212834;
   --dark-background-color: #1e2530;
   --box-color: #11111170;
-  --text-color: #ffffff;
-  --border-color:#ffffff;
+  --text-color: #333333;
+  --header-text-color: #222222;
+  --border-color: rgb(255 255 255 / 35%);
   --box-shadow: #111111;
   --cancel-color: #37474f;
   --dark-primary: rgb(41, 121, 255, 0.55);
   --light-primary: #75a7ff;
+
+  --glass-bg-light: rgba(255, 255, 255, 0.25);
+  --glass-bg-light-active: rgba(255, 255, 255, 0.45);
+  --clear-bg: rgba(255, 255, 255, 0);
 }
 
 body {
   box-sizing: border-box;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 50px;
+  background: rgb(254,172,94);
+background: linear-gradient(145deg, rgba(254,172,94,1) 0%, rgba(199,121,208,1) 35%, rgba(75,192,200,1) 100%);
+  
+
   /*height: 100vh;
   max-height: 100vh;
   width: 100vw;
@@ -33,11 +45,12 @@ body {
   color: var(--text-color);*/
 }
 
-html {
-  /*height: 100%;*/
+code {
+  border-radius: 14px;
 }
 
-body > *, div {
+body > *,
+div {
   box-sizing: border-box;
 }
 
@@ -63,5 +76,73 @@ body > *, div {
   scrollbar-color: var(--box-color) var(--background-color);
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+a {
+  text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    padding: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+a:active, .active-anchor {
+  background: var(--glass-bg-light-active);
+}
+
+a:hover:not(.active-anchor) {
+  background: var(--glass-bg-light);
+}
+
+h3, h4 {
+  color: var(--header-text-color);
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  /* -webkit-backdrop-filter: blur(4px); */
+  border-radius: 10px;
+  /* border: 1px solid rgba(255, 255, 255, 0.18); */
+}
+
+.glass-bg {
+  background: var(--glass-bg-light);
+}
+
+.clear-bg {
+  background: var(--clear-bg);
+}
+
+.fill-block {
+  box-sizing: border-box;
+}
+
+.inner-block {
+  display: block;
+  border-radius: 14px;
+  background: var(--glass-bg-light);
+  padding: 8px;
+}
+
+.standard-padding {
+  padding: 8px;
+}
+
+/* Overrides */
+.mat-drawer-content {
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-left: 121px;
+}
+
+.mat-tab-label {
+  opacity: 1 !important;
+}

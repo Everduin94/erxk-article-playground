@@ -1,44 +1,35 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { NavigationEnd, Router } from "@angular/router";
 import { HotToastService } from "@ngneat/hot-toast";
-import copy from "copy-to-clipboard";
-import { of } from "rxjs";
-import { delay } from "rxjs/operators";
+import { combineLatest, of } from "rxjs";
+import { delay, filter, tap } from "rxjs/operators";
+import { ArticlesService } from "./state/articles";
 
 @Component({
   selector: "app-root",
   template: `
-    <button tippy="Helpful Message" hotkeys="1" (hotkey)="showToast()" >
-      Intro
-    </button>
-
     <router-outlet></router-outlet>
   `,
-  styles: [
-    `
-    :host {
-      display: block;
-      padding: 50px;
-    }
-    `
-  ],
+  styles: [``],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = "angular-starter-project";
 
-  constructor(private toast: HotToastService) {
+  constructor(private toast: HotToastService) {}
+  
+  ngOnInit(): void {
   }
 
   showToast() {
-    of(100).pipe(
-      delay(3000),
-      this.toast.observe(
-        {
-          loading: 'Saving...',
-          success: 'Settings saved!',
-          error: 'Could not save.',
-        }
+    of(100)
+      .pipe(
+        delay(3000),
+        this.toast.observe({
+          loading: "Saving...",
+          success: "Settings saved!",
+          error: "Could not save.",
+        })
       )
-    ).subscribe();
-  
+      .subscribe();
   }
 }

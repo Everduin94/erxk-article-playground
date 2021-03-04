@@ -14,12 +14,15 @@ import { HotToastModule, HotToastService } from "@ngneat/hot-toast";
 import { TippyModule } from "@ngneat/helipopper";
 import { HotkeysModule } from "@ngneat/hotkeys";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { DemoComponent } from "./demo.component";
 import { CopyToClipboardModule, COPY_TO_CLIPBOARD_HANDLER } from "@ngneat/copy-to-clipboard";
 import copy from "copy-to-clipboard";
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { MatInputModule } from "@angular/material/input";
+import { NG_ENTITY_SERVICE_CONFIG } from "@datorama/akita-ng-entity-service";
+import { ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
-  declarations: [AppComponent, DemoComponent],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -37,6 +40,14 @@ import copy from "copy-to-clipboard";
     HotkeysModule,
     BrowserAnimationsModule,
     CopyToClipboardModule,
+    MatSidenavModule,
+    MatInputModule,
+    ReactiveFormsModule
+  ],
+  exports: [
+    FontAwesomeModule,
+    MatSidenavModule,
+    MatInputModule
   ],
   providers: [
     httpInterceptorProviders,
@@ -44,13 +55,18 @@ import copy from "copy-to-clipboard";
       provide: COPY_TO_CLIPBOARD_HANDLER,
       useFactory(toaster: HotToastService) {
         return function (text) {
-          console.log(text);
           toaster.success("Copied..");
           copy(text);
         };
       },
       deps: [HotToastService],
     },
+    {
+      provide: NG_ENTITY_SERVICE_CONFIG,
+      useValue: {
+        baseUrl: '/'
+      }
+    }
   ],
   bootstrap: [AppComponent],
 })
