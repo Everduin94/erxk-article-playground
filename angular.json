@@ -131,6 +131,10 @@
             }
           }
         },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
+        },
         "cypress-run": {
           "builder": "@briebug/cypress-schematic:cypress",
           "options": {
