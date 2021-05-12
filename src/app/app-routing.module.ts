@@ -8,7 +8,7 @@ const routes: Routes = [
     loadChildren: () => import('./articles-routing.module').then(mod => mod.ArticlesRoutingModule),
     
   },
-  {path: '', redirectTo: '/articles', pathMatch: 'full'},
+  {path: '', redirectTo: '/articles/home', pathMatch: 'full'},
 
   /*{path: '**', component: PageNotFoundComponent}*/
 ];

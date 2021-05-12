@@ -5,6 +5,7 @@ export interface Article {
   id: ID;
   name: string;
   description: string;
+  imageUrl: string;
   icon: IconDefinition;
 }
 
@@ -13,6 +14,7 @@ export function createArticle(params: Partial<Article>) {
     id: null,
     name: null,
     description: null,
+    imageUrl: null,
     icon: null,
     ...params
   } as Article;

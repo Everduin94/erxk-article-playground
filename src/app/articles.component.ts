@@ -11,7 +11,8 @@ import { Article, ArticlesService } from "./state/articles";
         opened
         class="standard-padding clear-bg border-right"
       >
-        <h4>Articles</h4>
+        
+        <h4 [routerLink]="['/articles']" style="cursor: pointer;">Articles</h4>
 
         <ng-container *ngIf="articles$ | async as articles">
           <ng-container *ngFor="let article of articles">

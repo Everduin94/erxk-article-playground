@@ -32,8 +32,43 @@ import { NEW_WO, WorkOrder, WorkOrdersService } from "src/app/state/workorders";
 export class RxjsNestedFilterComponent implements OnInit, OnDestroy {
   readonly baseSnippet = {
     id: "456",
-    inputs: [],
-    source: ``,
+    inputs: [`Editing is not wired up`],
+    source: `  
+  futureWoDispatcher = new Subject<ID | null>();
+  dispatchWo = (id: ID | null) => this.futureWoDispatcher.next(id);
+  createNewWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
+    filter((id) => id && id === NEW_WO),
+    map((id) => createWorkOrder({ id: guid() })),
+    switchMap((wo) => this.add(wo)),
+    tap((wo: WorkOrder) => this.setActive(wo.id)),
+    tap((wo: WorkOrder) => this.toast.success("Created WO - " + wo.id)),
+    switchMap(_ => this.statusSideEffectsListener$),
+  );
+  loadExistingWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
+    filter((id) => id && id !== NEW_WO),
+    tap((id: ID) => this.setActive(id)),
+    tap((id: ID) =>  this.toast.success("Loaded WO - " + id)),
+    switchMap(_ => this.statusSideEffectsListener$)
+  );
+  deactivateWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
+    filter((wo) => !wo),
+    map((_) => this.setActive(null))
+  );
+
+  statusSideEffectsListener$: Observable<void> = merge(
+    this.isOpen$,
+    this.isClosed$,
+    this.isOnHold$,
+    this.isInProgress$
+  ).pipe(map(_ => undefined));
+
+  activateWoListener$: Observable<void> = merge(
+    this.createNewWoListener$,
+    this.loadExistingWoListener$,
+    this.deactivateWoListener$
+  );
+    
+    `,
   };
   readonly subscription = new Subscription();
   readonly returnIcon = faArrowLeft;
@@ -44,8 +79,8 @@ export class RxjsNestedFilterComponent implements OnInit, OnDestroy {
   constructor(public wos: WorkOrdersService) {}
 
   ngOnInit(): void {
-    this.activeWo$ = this.wos.selectActive$;
-    this.allWoNames$ = this.wos.selectWoNames$;
+    this.activeWo$ = this.wos.workOrderState$;
+    this.allWoNames$ = this.wos.workOrderEntityStateNames$;
     this.wos.setActive(null);
   }
 
@@ -54,10 +89,10 @@ export class RxjsNestedFilterComponent implements OnInit, OnDestroy {
   }
 
   setActive(id) {
-    this.wos.activateWo(id);
+    this.wos.dispatchWo(id);
   }
 
   generateWo() {
-    this.wos.activateWo(NEW_WO);
+    this.wos.dispatchWo(NEW_WO);
   }
 }

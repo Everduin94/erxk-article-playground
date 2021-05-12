@@ -32,8 +32,8 @@ export class InMemoryDatabaseService implements InMemoryDbService {
 
     // Meta
     const articles: Array<any> = [
-      { id: "rxjsfilter", name: "RxJS Filter", description: "Declarative Conditional Statements", icon: faFilter },
-      { id: "formTips", name: "Form Tips", description: "Reactive Forms Tips and Tricks", icon: faScroll },
+      { id: "rxjsfilter", name: "RxJS Filter", description: "Declarative Conditional Statements", imageUrl: "https://cdn-images-1.medium.com/max/1000/1*zZfn8N-ueDcf3a2XTP409Q.png", icon: faFilter },
+      { id: "formTips", name: "Form Tips", description: "Reactive Forms Tips and Tricks", imageUrl: "https://cdn-images-1.medium.com/max/1000/1*_TC9-wK2EiUfA8KQxSQE5g.png", icon: faScroll },
     ];
 
     return { users, workOrders, workOrderCodes, articles };

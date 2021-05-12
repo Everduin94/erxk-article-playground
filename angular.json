@@ -37,7 +37,7 @@
               {
                 "input": "./node_modules/highlight.js/styles/atelier-lakeside-light.css",
                 "bundleName": "light-theme",
-                "inject": true
+                "lazy": true              
               }
             ],
             "scripts": []

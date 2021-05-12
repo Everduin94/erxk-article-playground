@@ -2,13 +2,15 @@ import { Injectable } from "@angular/core";
 import { NgEntityService } from "@datorama/akita-ng-entity-service";
 import { WorkOrdersStore, WorkOrdersState } from "./work-orders.store";
 import { cacheable, guid, ID } from "@datorama/akita";
-import { merge, Observable, Subject } from "rxjs";
+import { merge, Observable, ReplaySubject, Subject } from "rxjs";
 import { WorkOrder } from ".";
 import { WorkOrdersQuery } from "./work-orders.query";
 import {
   distinctUntilChanged,
   filter,
+  first,
   map,
+  mergeMap,
   shareReplay,
   switchMap,
   take,
@@ -17,77 +19,71 @@ import {
 import { createWorkOrder } from "./work-order.model";
 import { HotToastService } from "@ngneat/hot-toast";
 import { WorkOrderStatus } from "../models/workorderstatus";
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 
 export const NEW_WO = "new-wo";
 
+export function filterByStatus(status) {
+  return filter((wo: WorkOrder) => status === wo.status)
+}
+
 @Injectable({ providedIn: "root" })
 export class WorkOrdersService extends NgEntityService<WorkOrdersState> {
-  activeWoForm;
-
-  selectActive$ = this.query.selectActive();
-  selectAll$ = this.query.selectAll();
-  selectWoNames$ = this.query
-    .selectAll()
-    .pipe(
+  
+  activeWoForm: FormGroup;
+  workOrderState$ = this.query.selectActive();
+  workOrderEntityState$ = this.query.selectAll();
+  workOrderEntityStateNames$ = this.query.selectAll().pipe(
       map((workorders: Array<{ id: ID; name: string }>) =>
         workorders.map(({ id, name }) => ({ id, name }))
       )
     );
 
-  activateWoEvent = new Subject();
-  activateWo = (id) => this.activateWoEvent.next(id);
-  createNewWo$ = this.activateWoEvent.pipe(
+  futureWoDispatcher = new Subject<ID | null>();
+  dispatchWo = (id: ID | null) => this.futureWoDispatcher.next(id);
+  createNewWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
     filter((id) => id && id === NEW_WO),
     map((id) => createWorkOrder({ id: guid() })),
-    tap((wo) => {
-      this.add(wo).subscribe();
-      this.setActive(wo.id);
-      this.toast.success("Created WO - " + wo.id);
-    })
+    switchMap((wo) => this.add(wo)),
+    tap((wo: WorkOrder) => this.setActive(wo.id)),
+    tap((wo: WorkOrder) => this.toast.success("Created WO - " + wo.id)),
+    switchMap(_ => this.statusSideEffectsListener$),
   );
-  loadExistingWo$ = this.activateWoEvent.pipe(
+  loadExistingWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
     filter((id) => id && id !== NEW_WO),
-    tap((id: ID) => {
-      this.setActive(id);
-      this.toast.success("Loaded WO - " + id);
-    }),
-    switchMap((id) => this.statusSideEffects$)
+    tap((id: ID) => this.setActive(id)),
+    tap((id: ID) =>  this.toast.success("Loaded WO - " + id)),
+    switchMap(_ => this.statusSideEffectsListener$)
   );
-  deactivateWo$ = this.activateWoEvent.pipe(
-    filter((id) => !id),
-    tap((_) => this.setActive(null))
+  deactivateWoListener$: Observable<void> = this.futureWoDispatcher.pipe(
+    filter((wo) => !wo),
+    map((_) => this.setActive(null))
   );
 
-  wo$ = this.query.selectActive().pipe(
+  formBuilderListener$: Observable<WorkOrder> = this.workOrderState$.pipe(
     take(1),
-    tap((wo) => (this.activeWoForm = this.buildForm(wo)))
+    tap((wo: WorkOrder) => this.activeWoForm = this.buildForm(wo))
   );
-  isOpen$ = this.wo$.pipe(
-    filter((wo) => WorkOrderStatus.OPEN === wo.status)
-  );
-  isClosed$ = this.wo$.pipe(
-    filter((wo) => WorkOrderStatus.CLOSED === wo.status)
-  );
-  isInProgress$ = this.wo$.pipe(
-    filter((wo) => WorkOrderStatus.IN_PROGRESS === wo.status)
-  );
-  isOnHold$ = this.wo$.pipe(
-    filter((wo) => WorkOrderStatus.ON_HOLD === wo.status),
+  isOpen$ = this.formBuilderListener$.pipe(filterByStatus(WorkOrderStatus.OPEN));
+  isClosed$ = this.formBuilderListener$.pipe(filterByStatus(WorkOrderStatus.CLOSED));
+  isInProgress$ = this.formBuilderListener$.pipe(filterByStatus(WorkOrderStatus.IN_PROGRESS));
+  isOnHold$ = this.formBuilderListener$.pipe(
+    filterByStatus(WorkOrderStatus.ON_HOLD),
     tap((_) => this.alertUserOnHold()),
     tap((_) => this.disableFieldsOnHold())
   );
-  statusSideEffects$ = merge(
+
+  statusSideEffectsListener$: Observable<void> = merge(
     this.isOpen$,
     this.isClosed$,
     this.isOnHold$,
     this.isInProgress$
-  );
+  ).pipe(map(_ => undefined));
 
-  activateWo$ = merge(
-    this.createNewWo$,
-    this.loadExistingWo$,
-    this.deactivateWo$
+  activateWoListener$: Observable<void> = merge(
+    this.createNewWoListener$,
+    this.loadExistingWoListener$,
+    this.deactivateWoListener$
   );
 
   constructor(
@@ -97,8 +93,8 @@ export class WorkOrdersService extends NgEntityService<WorkOrdersState> {
     private fb: FormBuilder
   ) {
     super(store);
-    this.get().subscribe();
-    this.activateWo$.subscribe();
+    this.activateWoListener$.subscribe();
+    this.get().subscribe();    
   }
 
   getById(id): Observable<WorkOrder> {

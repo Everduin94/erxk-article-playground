@@ -55,7 +55,7 @@ export class RxjsFilterComponent implements OnInit {
   
 
   ngOnInit(): void {
-    this.wos.activateWo("1");
+    this.wos.dispatchWo("1");
   }
 
   constructor(
