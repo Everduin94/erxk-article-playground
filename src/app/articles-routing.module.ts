@@ -2,24 +2,31 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ArticlesComponent } from "./articles.component";
 import { Routes, RouterModule } from "@angular/router";
-import { SnippetExampleComponent } from "./snippet/snippet-example.component";
-import { SnippetInputsComponent } from "./snippet/snippet-inputs.component";
-import { SnippetSourceComponent } from "./snippet/snippet-source.component";
-import { SnippetComponent } from "./snippet/snippet.component";
+import { SnippetInputsComponent } from "./snippet/share/snippet-inputs.component";
+import { SnippetSourceComponent } from "./snippet/share/snippet-source.component";
+import { SnippetComponent } from "./snippet/share/snippet.component";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { RxjsFilterComponent } from "./snippet/examples/rxjs-filter.component";
 import { HomeComponent } from "./home.component";
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from "@angular/material/select";
 import { HtmlPipe } from "./pipes/html.pipe";
-import { FormTipsComponent } from "./snippet/examples/form-tips.component";
 import { ReactiveFormsModule } from "@angular/forms";
-import { RxjsNestedFilterComponent } from "./snippet/examples/rxjs-nested-filter.component";
 import {MatTabsModule} from '@angular/material/tabs';
-import { RxjsFilterContainerComponent } from "./snippet/examples/rxjs-filter-container.component";
+import { SnippetContainer } from "./snippet/share/snippet-container.component";
 import {MatButtonModule} from '@angular/material/button';
 import { RxjsFilterFormComponent } from './snippet/examples/rxjs-filter-form.component';
+import {LoadingComponent} from "./components/loading.component";
+import {GistComponent} from "./components/gist.component";
+import {DynamicLoaderDirective} from "./components/dynamic-loader.directive";
+import {FillerExampleComponent} from "./components/filler-example.component";
+import {NestedFiltersComponent} from "./snippet/examples/nested-filters.component";
+import {LoadingExComponent} from "./snippet/examples/loading-ex.component";
+import {
+  BasicLoadingComponent,
+  NgContentExComponent,
+  SuccessComponent
+} from "./snippet/examples/ng-content-ex.component";
 
 const ARTICLE_ROUTES: Routes = [
   {
@@ -28,11 +35,15 @@ const ARTICLE_ROUTES: Routes = [
     children: [
       {
         path: "rxjsfilter",
-        component: RxjsFilterContainerComponent,
+        component: SnippetContainer,
       },
       {
         path: "formTips",
-        component: FormTipsComponent,
+        component: SnippetContainer,
+      },
+      {
+        path: "ngTemplate",
+        component: SnippetContainer,
       },
       {
         path: "home",
@@ -46,16 +57,21 @@ const ARTICLE_ROUTES: Routes = [
 @NgModule({
   declarations: [
     ArticlesComponent,
+    FillerExampleComponent,
+    NestedFiltersComponent,
+    LoadingExComponent,
+    NgContentExComponent,
+    BasicLoadingComponent,
+    SuccessComponent,
     SnippetComponent,
-    SnippetExampleComponent,
     SnippetInputsComponent,
     SnippetSourceComponent,
-    RxjsFilterComponent,
     HomeComponent,
-    FormTipsComponent,
-    RxjsNestedFilterComponent,
-    RxjsFilterContainerComponent,
+    SnippetContainer,
     RxjsFilterFormComponent,
+    LoadingComponent,
+    GistComponent,
+    DynamicLoaderDirective,
     HtmlPipe,
   ],
   exports: [MatSidenavModule, MatInputModule, MatTabsModule, MatButtonModule],

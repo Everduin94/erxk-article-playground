@@ -9,7 +9,7 @@ import {
   distinctUntilChanged,
   filter,
   first,
-  map,
+  map, mapTo,
   mergeMap,
   shareReplay,
   switchMap,

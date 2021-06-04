@@ -30,9 +30,8 @@ import { Article, ArticlesService } from "./state/articles";
             <h3>{{activeArticle?.name}} - {{activeArticle?.description}}</h3>
           </ng-container>
         </div>
-        <div>
-          <router-outlet></router-outlet>
-        </div>
+        
+        <router-outlet></router-outlet>
       </mat-drawer-content>
     </mat-drawer-container> 
 
