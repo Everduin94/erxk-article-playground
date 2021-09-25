@@ -31,3 +31,4 @@ Preconfigured
 
 Testing fugitive
 testing fugitive 2
+Testing fugitive 3
